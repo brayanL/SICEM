@@ -1,0 +1,492 @@
+{% extends "base.html" %}
+{% block titulo %}Nueva Factura{% endblock titulo %}
+{% block contenido %}
+    <form method="post" action="" id="form_fact">{% csrf_token %}
+        {% include "solicitud_credito.html" %}
+        {% block titulo_pagina %}
+            <h2 class="page-header">Facturacion
+                <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-floppy-o"></i> Guardar</button>
+            </h2>
+        {% endblock titulo_pagina %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-green">
+                    <div class="panel-heading">Informacion General <div class="pull-right"><strong>Fecha: </strong>04/08/2015</div></div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="nfactura" class="col-sm-4">Factura N°</label>
+                                        <div class="col-sm-8"><input type="text" name="nfactura" id="nfactura" value="{{ nro_fact }}" class="form-control" readonly/></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-horizontal">
+                                    <div class="form-group input-group col-sm-12">
+                                        <span class="input-group-addon">Cedula/Ruc</span>
+                                        <input type="text" id="cedula_ruc" name="ruc" class="form-control" placeholder="Buscar por Cedula"/>
+                                        <input type="hidden" id="id_cliente" name="id_cliente"/>
+                                    <span class="input-group-btn">
+                                        <button type="button" id="ccheck" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-horizontal">
+                                    <div class="form-group input-group col-sm-12">
+                                        <span class="input-group-addon">Nombres</span>
+                                        <input type="text" id="nombre_cli" name="nombre_cli" class="form-control" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="autorizacion" class="col-sm-4">Autorizacion</label>
+                                        <div class="col-sm-8"><input readonly type="text" name="autorizacion" id="autorizacion" value="{{ auto }}" class="form-control" /></div>
+                                        <input type="hidden" id="id_autorizacion" name="id_autorizacion" value="{{ auto.id }}"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-horizontal">
+                                    <div class="form-group input-group col-sm-12">
+                                        <span class="input-group-addon">Direccion</span>
+                                        <input type="text" id="direccion" name="direccion" class="form-control" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-horizontal">
+                                    <div class="form-group input-group col-sm-12">
+                                        <span class="input-group-addon">Forma Pago</span>
+                                        <select name="fpago" id="fpago" class="form-control">
+                                            <option>Contado</option>
+                                            <option>Credito</option>
+                                        </select>
+                                    <span class="input-group-btn">
+                                        <button id="scredito" type="button" data-toggle="modal" data-target="#modal_credito" class="btn btn-success" disabled><i class="fa fa-plus-circle"></i></button>
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="">Sub-Total</label>
+                                    <input type="number" value="0" min="0" id="subtotal" name="subtotal" class="form-control" readonly/>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="">Descuento %</label>
+                                    <input type="number" value="0" min="0" id="descuento_porcent" name="descuento_porcent" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="">Descuento $</label>
+                                    <input readonly type="number" value="0" min="0" id="descuento" name="descuento" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label for="">Iva 12%</label>
+                                    <input type="number" value="0" id="iva" min="0" name="iva" class="form-control" readonly/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="">Total a Pagar $</label>
+                                    <input type="number" value="0" min="0" id="total_cobrar" name="total_cobrar" class="form-control" readonly/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-green">
+                    <div class="panel-heading clearfix ">Detalle de factura <div class="pull-right">
+                    </div></div>
+                    <div class="panel-body">
+                        <div class="table-responsive form-inline">
+                            <input id="list_detalle" name="list_detalle" type="hidden"/>
+                            <table id="tb_factura" class="table table-bordered table-striped display" aria-describedby="detalle de factura">
+                                <thead>
+                                <tr>
+                                    <td style="width: 15%;">Codigo</td>
+                                    <td style="width: 5%;">Cantidad</td>
+                                    <td style="width: auto">Descripcion</td>
+                                    <td>P. Unitario</td>
+                                    <td>Importe</td>
+                                    <td></td>
+                                </tr>
+                                </thead>
+                                <tbody id="body_fact">
+                                <tr id="tr1">
+                                    <td><input id="1" name="1" type="text" class="form-control td_codigo" style="width: 100%"/><input id="id1" name="id1" type="hidden"/></td>
+                                    <td><input id="ca1" name="ca1" type="number" min="1"  value="1" class="form-control td_cantidad" style="width: 100%"/><input id="st1" name="st1" value="0" type="hidden"/></td>
+                                    <td><input id="no1" name="no1" type="text" class="form-control" readonly style="width: 100%"/></td>
+                                    <td><input id="pu1" name="pu1" type="number" step="0.01" value="0" class="form-control" readonly style="width: 100%"/></td>
+                                    <td><input id="to1" name="to1" type="number" step="0.01" value="0" class="form-control" readonly style="width: 100%"/></td>
+                                    <td><button type="button" id="bt1" class="btn btn-danger td_eliminar" title="eliminar"><i class="fa fa-trash-o"></i></button></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        var numberRegex = /^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/;
+        $("#descuento_porcent").on('focusout', function(){
+            var str = $(this).val();
+            if(numberRegex.test(str)) {
+                if(parseFloat(str) >= 100){
+                    $(this).val("0");
+                    $.notice("El descuento no puede ser igual o mayor al 100 %.", {level: "error"});
+                }
+                else{
+                    CalcDesc();
+                }
+            }
+            else{
+                $(this).val("0");
+                CalcDesc();
+            }
+
+        });
+        $("#id_cant_letras").on('focusout', function(){
+            var str = $(this).val();
+            if(numberRegex.test(str)) {
+                CalcCredito();
+            }
+            else{
+                $(this).val("0");
+                CalcCredito();
+            }
+
+        });
+
+        function CalcCredito(){
+            letras = parseFloat($("#id_cant_letras").val());
+            dinero = parseFloat($("#id_cant_dinero").val());
+            total_cobrar = parseFloat($("#total_cobrar").val());
+            $("#id_cant_dinero").val((total_cobrar/letras).toFixed(2));
+            $("#total_pagar").val(total_cobrar);
+        }
+
+        $("#id_cant_dinero").on('focusout', function(){
+            console.log("hollaaa");
+            var str = $(this).val();
+            if(numberRegex.test(str)) {
+                CalcCredito();
+            }
+            else{
+                $(this).val("0");
+                CalcCredito();
+            }
+
+        });
+
+        function LimpiarTotales(){
+            $("#iva").val("0");
+            $("#total_cobrar").val("0");
+        }
+
+        function CalcDesc(){
+            var str = $("#descuento_porcent").val();
+            /*var presubto = $("#subtotal").val();
+             if(numberRegex.test(presubto)){
+
+             }*/
+            var subto = parseFloat($("#subtotal").val());
+            if(str != "" && subto > 0){
+                var porcent = parseFloat(str).toFixed(2);
+                var desc = (subto*(porcent/100)).toFixed(2);
+                if(subto > 0){
+                    $("#descuento").val(desc);
+                    $("#iva").val(((subto-desc)*0.12).toFixed(2));
+                    $("#total_cobrar").val(((subto-desc)*1.12).toFixed(2));
+
+                }
+                else{
+                    LimpiarTotales();
+                }
+            }
+            else{
+                if(subto > 0){
+                    $("#iva").val((subto*0.12).toFixed(2));
+                    $("#total_cobrar").val((subto*1.12).toFixed(2));
+                }
+                else{
+                    LimpiarTotales();
+                }
+            }
+        }
+
+        $('#form_fact').submit(function(){
+            //var errors = 0;
+            var seleccionado = $("option:selected", this).text();
+            if(seleccionado == "Credito"){
+                if($("#id_garante").val() == "" || parseFloat($("#total_pagar").val()) == 0){
+                    $.notice("Si selecciona crédito debe ubicar los datos respectivos.", {level: "error"});
+                    console.log("false 1");
+                    return false;
+                }
+            }
+            if($("#id_cliente").val() == "" || $("#id_autorizacion").val() == "" || parseFloat($("#total_cobrar").val()) == 0){
+                $.notice("Asegurese que los campos: Cliente, Autorizacion y Total sean reconocidos.", {level: "error"});
+                console.log("false 2");
+                return false;
+            }
+
+        });
+
+        $('#form_fact').on('keyup keypress', function(e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $("#fpago").on("change", function(){
+            var seleccionado = $("option:selected", this).text();
+            if(seleccionado == "Credito"){
+                $("#scredito").removeProp("disabled");
+            }
+            else{
+                $("#scredito").prop("disabled",true);
+            }
+        });
+
+        $("#ccheck").on('click', Verificar);
+        function Verificar(){
+            var ced = $("#cedula_ruc").val();
+            if(ced != ""){
+                $.ajax({
+                    data : {'cedula_ruc': ced},
+                    url : '/cliente/check/',
+                    type : 'get',
+                    success:function(data){
+                        var object = JSON.parse(data);
+                        if(object.id != 0)
+                        {
+                            $("#id_cliente").val(object.id);
+                            $("#nombre_cli").val(object.nombres + " " + object.apellidos);
+                            $("#direccion").val(object.direccion);
+                            $.notice("El cliente fue encontrado", {level: "success"});
+                        }
+                        else
+                        {
+                            $("#id_cliente").val("");
+                            $("#nombre_cli").val("");
+                            $("#direccion").val("");
+                            $.notice("No encontramos el cliente.", {level: "info"});
+                        }
+                    }
+                });
+            }
+
+        }
+
+        $("#cedula_ruc").on('keypress', function(event){
+            if (event.which == 13){
+                Verificar();
+            }
+        });
+
+        /*$("#cedula_ruc").on('focusout', function(){
+            Verificar();
+        });*/
+
+        $("#search_garante").on('click', VerificarGarante);
+
+        function VerificarGarante(){
+            var ced = $("#cedula_garante").val();
+            if(ced != ""){
+                $.ajax({
+                    data : {'cedula_ruc': ced},
+                    url : '/cliente/check/',
+                    type : 'get',
+                    success:function(data){
+                        var object = JSON.parse(data);
+                        if(object.id != 0)
+                        {
+                            $("#id_garante").val(object.id);
+                            $("#nombres_garante").val(object.nombres + " " + object.apellidos);
+                            $.notice("El garante fue encontrado", {level: "success"});
+                            //alert("El garante fue encontrado");
+                        }
+                        else
+                        {
+                            $("#id_garante").val("");
+                            $("#nombres_garante").val("");
+                            $.notice("No encontramos el garante.", {level: "warning"});
+                            //alert("No encontramos el garante.");
+                        }
+                    }
+                });
+            }
+            else{
+                $("#id_garante").val("");
+                $("#nombres_garante").val("");
+            }
+        }
+
+        $("#cedula_garante").on('keypress', function(event){
+            if (event.which == 13){
+                VerificarGarante();
+            }
+        });
+
+        $("#cedula_garante").on('focusout', function(){
+            VerificarGarante();
+        });
+
+        function add_row(param){
+            var rowCount = parseInt(param);
+            $("#tb_factura tbody").append('<tr id="tr'+ rowCount +'"> '+
+                    '<td><input id="'+rowCount+'" name="'+rowCount+'" type="text" class="form-control td_codigo" style="width: 100%"/></td><input id="id'+rowCount+'" name="id'+rowCount+'" type="hidden"/></td> ' +
+                    '<td><input id="ca'+rowCount+'" name="ca'+rowCount+'" type="number" min="1" value="1" class="form-control td_cantidad" style="width: 100%"/><input id="st'+rowCount+'" name="st'+rowCount+'" value="0" type="hidden"/></td> ' +
+                    '<td><input id="no'+rowCount+'" name="no'+rowCount+'" type="text" class="form-control" readonly style="width: 100%"/></td> ' +
+                    '<td><input id="pu'+rowCount+'" name="pu'+rowCount+'" type="number" step="0.01" value="0" class="form-control" readonly style="width: 100%"/></td> ' +
+                    '<td><input id="to'+rowCount+'" name="to'+rowCount+'" type="number" step="0.01" value="0" class="form-control" readonly style="width: 100%"/></td> ' +
+                    '<td><button type="button" id="bt'+rowCount+'" class="btn btn-danger td_eliminar" title="eliminar"><i class="fa fa-trash-o"></i></button></td> '+
+                    '</tr>');
+        }
+
+
+        $('#body_fact').on('keydown', '.td_codigo', function(event){
+            if(event.which == 13 || event.which ==   9){
+                var codigo = $(this).val();
+                var index = this.id;
+                CalcCodigo(codigo, index);
+            }
+        });
+
+        /*$('#body_fact').on('focusout', '.td_codigo', function(){
+            var codigo = $(this).val();
+            var index = this.id;
+            CalcCodigo(codigo, index);
+        });*/
+
+        function CalcCodigo(codigo, index){
+            if(codigo != ""){
+                $.ajax({
+                    data: {'codigo_barra':codigo},
+                    url: '/productos/check/',
+                    type: 'get',
+                    success:function(data){
+                        var object = JSON.parse(data);
+                        if(object.id != 0) {
+                            if (parseInt(object.stock) > 0) {
+                                $("#no" + index).val(object.nombre);
+                                $("#pu" + index).val(object.precio_unitario);
+                                $("#id" + index).val(object.id);
+                                $("#st" + index).val(object.stock);
+                                if ($('#tb_factura tbody>tr:last')[0].id.substr(2) == index) {
+                                    add_row(parseInt(index) + 1);
+                                }
+                                $("#ca" + index).focus();
+                            }
+                            else{
+                                $("#to" + index).val("0");
+                                $.notice("No hay stock suficiente.", {level: "error"});
+                            }
+                        }
+                        else
+                        {
+                            $("#no" + index).val("");
+                            $("#pu" + index).val("0");
+                            $("#st" + index).val("0");
+                            $("#id" + index).val("");
+                            $.notice("No encontramos el producto.", {level: "error"});
+                        }
+                    }
+                });
+            }
+            else
+            {
+                $("#no" + index).val("");
+                $("#pu" + index).val("0");
+                $("#id" + index).val("");
+                $("#to" + index).val("0");
+                $.notice("No puede dejar en blanco el código.", {level: "warning"});
+            }
+        }
+
+        $('#body_fact').on('click', '.td_eliminar', function(event){
+            if($("#tb_factura tbody>tr").length > 1)
+            {
+                var index = this.id.substr(2);
+                $('#tr'+index).remove();
+                CalcTot();
+            }
+            else
+            {
+                $.notice("No puede eliminar la única fila.", {level: "error"});
+            }
+        });
+
+        function CalcTot(){
+            var acum = 0;
+            var tots = "";
+            $("#list_detalle").val("");
+            $("#tb_factura tbody tr").each(function(){
+                tots = parseFloat($("#to"+$(this)[0].id.substr(2)).val());
+                if(tots > 0){
+                    acum += tots;
+                    if($("#list_detalle").val() == ""){
+                        $("#list_detalle").val($(this)[0].id.substr(2))
+                    }
+                    else{
+                        $("#list_detalle").val($("#list_detalle").val()+","+ $(this)[0].id.substr(2))
+                    }
+
+                }
+
+            });
+            $("#subtotal").val(acum.toFixed(2));
+            CalcDesc();
+        }
+
+        $('#body_fact').on('focusout', '.td_cantidad', function(){
+            var index = this.id.substr(2);
+            var stock = parseInt($("#st"+index).val());
+            if(stock >= parseInt($(this).val()))
+            {
+                var ca = parseInt($(this).val());
+                var pu = parseFloat($("#pu" + index).val());
+                $("#to" + index).val((ca*pu).toFixed(2));
+                CalcTot();
+            }
+            else
+            {
+                $("#to" + index).val("");
+                CalcTot();
+                $.notice(("Solo tiene en stock "+stock), {level: "error"});
+            }
+        });
+    </script>
+{% endblock contenido %}

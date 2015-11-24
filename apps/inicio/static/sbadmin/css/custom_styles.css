@@ -1,0 +1,8 @@
+/*Color Rojo para asterisco */
+.crojo{
+    color: #b52b27;
+}
+/*Para color de la fila seleccionada*/
+.table-color tbody tr.highlight td {
+            background-color: #d9edf7;
+        }

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "sbadmin/css/custom_styles.css" %}"/>
+{% endblock css %}
+{% block titulo %}Nueva Autorizacion{% endblock titulo %}
+{% block contenido %}
+    <form id="form_ncliente" action="{% url 'facturacion_app:nautorizacion' %}" method="post">{% csrf_token %}
+        {% block titulo_pagina %}
+            <h2 class="page-header">Nuevo Autorizacion <button class="btn btn-primary pull-right"><i class="fa fa-floppy-o"></i> Guardar</button></h2>
+        {% endblock titulo_pagina %}
+        {% include 'parts/controls_autorizaciones.html' %}
+    </form>
+{% endblock contenido %}

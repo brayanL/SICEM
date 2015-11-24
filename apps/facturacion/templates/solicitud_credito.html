@@ -1,0 +1,59 @@
+<div class="modal fade" id="modal_credito" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-describedby="Modal para solicitud de credito">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #3f903f; color: white;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Solicitud de Credito</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="">Garante</label>
+                            <div class="input-group">
+                                <input id="cedula_garante" type="text" class="form-control" placeholder="Buscar por Cedula"/>
+                                    <span class="input-group-btn">
+                                        <button type="button" id="search_garante" class="btn btn-default" ><i class="fa fa-search"></i></button>
+                                    </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label for="">Nombres del Garante</label>
+                        <input id="nombres_garante" type="text" class="form-control" readonly/>
+                        <input type="hidden" id="id_garante" name="id_garante"/>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="">Dia de pago</label>
+                            <input class="form-control" id="id_dia_vencimiento" name="dia_vencimiento" min="0" max="31" type="number"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="">Cantidad Letras</label>
+                            <input class="form-control" id="id_cant_letras" name="cant_letras" min="0" type="number">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="">Dinero por letra</label>
+                            <input class="form-control" id="id_cant_dinero" name="cant_dinero" min="0" step="0.01" type="number" readonly>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <span class="input-group-addon" style="background-color: #ca3523; color: white;">Total $</span>
+                            <input value="0" readonly id="total_pagar" type="number" class="form-control"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

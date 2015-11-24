@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block titulo %}Autorizaciones SRI{% endblock titulo %}
+{% block modal %}
+    <!-- Modal Dar de Baja-->
+{% comment %}    <div class="modal fade" id="modal_dbaja" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-describedby="modal dar baja cliente">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Dar de Baja a Cliente</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Esta seguro que desea dar de baja al cliente seleccionado?</p>
+                </div>
+                <div class="modal-footer">
+                    <form id="del_button_x" method="post">{% csrf_token %}
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-danger">Dar Baja</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>{% endcomment %}
+    <!-- Fin de Modal-->
+{% endblock modal %}
+{% block contenido %}
+    {% block titulo_pagina %}
+        <h2 class="page-header">Autorizaciones SRI
+{#            <a id="del_button" disabled="disabled" class="btn btn-danger pull-right" data-toggle="modal" data-target="#modal_dbaja"><i class="fa fa-trash"></i> Dar Baja</a>#}
+            <a id="edit_button" class="btn btn-info pull-right"><i class="fa fa-list-alt"></i> Detalles</a>
+            <a href="{% url "facturacion_app:nautorizacion" %}" class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i> Nuevo</a>
+        </h2>
+    {% endblock titulo_pagina %}
+    <div class="col-lg-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">Lista de autorizaciones</div>
+            <div class="panel-body">
+                <div class="table-responsive form-inline">
+                    <table id="tb_autorizaciones" class="table table-bordered table-striped display table-color" aria-describedby="lista de autorizaciones">
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var datos = [];
+        {% for aut in autorizaciones %}
+            datos.push(["{{ aut.id }}", "{{ aut.autorizacion_sri }}", "{{ aut.nro_establecimiento }}", "{{ aut.nro_emision }}"]);
+        {% endfor %}
+        $(document).ready(function(){
+
+            $("#tb_autorizaciones").dataTable({
+                "data": datos,
+                "columns":[
+                    {"title": "ID"},
+                    {"title": "autorizacion_sri"},
+                    {"title": "nro_establecimiento"},
+                    {"title": "nro_emision"}
+                ]
+            });
+            //Para determinar en que fila de la tabla se hizo click y llamar a la siguiente url
+            $("#tb_autorizaciones tbody").on('click', 'tr', function(event){
+                //Obtener el contenido de una fila
+                if (datos.length != 0) {
+                    var $td = $(this).closest('tr').children('td');
+                    var sr = $td.eq(0).text();
+                    $("#edit_button").attr("href", "edit/" + sr);
+                    $("#del_button").removeAttr("disabled", "");
+                    $("#del_button_x").attr("action", "del/" + sr + "/");
+                    $(this).addClass('highlight').siblings().removeClass('highlight');
+                }
+            });
+
+        });
+
+    </script>
+{% endblock contenido %}

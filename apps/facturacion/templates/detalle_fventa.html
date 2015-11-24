@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Detalle Factura Venta{% endblock titulo %}
+{% block contenido %}
+    {% block titulo_pagina %}<h2 class="page-header">Detalle de Factura N° <span>{{ detalle.first.factura_venta.id }}</span></h2>{% endblock titulo_pagina %}
+    <div class="panel panel-green">
+        <div class="panel-heading">Lista de Productos</div>
+        <div class="panel-body">
+            <div class="table-responsive form-inline">
+                <table id="tb_detallefv" class="table table-bordered table-striped display table-color" aria-describedby="detalle factura venta">
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var datos= [];
+        {%  for det in detalle %}
+            datos.push(["{{ det.movimiento.producto.id }}","{{ det.movimiento.producto.codigo_barra }}","{{ det.movimiento.producto.nombre }}",
+                        "{{ det.movimiento.cantidad }}","{{ det.movimiento.precio_unitario }}"]);
+        {% endfor %}
+        $(document).ready(function() {
+            $("#tb_detallefv").dataTable({
+                "data": datos,
+                "columns":[
+                    {"title":"ID"},
+                    {"title":"Codigo Barras"},
+                    {"title":"Nombre"},
+                    {"title":"Cantidad"},
+                    {"title":"Precio Unitario"}
+                ],
+                "bAutoWidth": false
+            });
+        });
+    </script>
+{% endblock contenido %}

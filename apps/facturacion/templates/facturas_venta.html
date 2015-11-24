@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Facturas de Venta{% endblock titulo %}
+{% block contenido %}
+    {% block titulo_pagina %}<h2 class="page-header">Facturas de Venta
+            <a disabled="disabled" id="btn_detalle" href="#" class="btn btn-info pull-right"><i class="fa fa-list-alt"></i> Detalle</a>
+            <a disabled="disabled" id="btn_print" target="_blank" href="#" class="btn btn-primary pull-right"><i class="fa fa-print"></i> Imprimir</a>
+        </h2>
+    {% endblock titulo_pagina %}
+    <div class="panel panel-green">
+        <div class="panel-heading">Lista de Facturas de Venta</div>
+        <div class="panel-body">
+            <div class="table-responsive form-inline">
+                <table id="tb_fventa" class="table table-bordered table-striped display table-color" aria-describedby="lista de facturas de venta">
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var datos= [];
+        {% for fv in fventa %}
+            datos.push(["{{ fv.autorizacion_sri.nro_establecimiento }}-{{ fv.autorizacion_sri.nro_emision }}-{{ fv.id }}", "{{ fv.fecha }}",
+                        "{{ fv.cliente.nombres }} {{ fv.cliente.apellidos }}","{{ fv.subtotal }}","{{ fv.descuento_porcent }}",
+                        "{{ fv.importe_iva_12 }}","{{ fv.total }}"]);
+        {% endfor %}
+
+        $(document).ready(function() {
+            $("#tb_fventa").dataTable({
+                "data": datos,
+                "columns": [
+                    {"title": "N° Factura"},
+                    {"title": "Fecha"},
+                    {"title": "Cliente"},
+                    {"title": "Subtotal"},
+                    {"title": "Descuento"},
+                    {"title": "Iva"},
+                    {"title": "Total"}
+                ],
+                "bAutoWidth": false
+            });
+            $("#tb_fventa tbody").on('click', 'tr', function(){
+                if(datos.length !=0){
+                    var $td = $(this).closest('tr').children('td');
+                    var sr = $td.eq(0).text();
+                    $("#btn_print").removeAttr("disabled", "");
+                    $("#btn_detalle").removeAttr("disabled", "");
+                    $("#btn_detalle").prop("href","/factura_venta/detalle/"+sr.split("-",3)[2]);
+                    $("#btn_print").prop("href","/factura_venta/reporte/"+sr.split("-",3)[2]);
+                    $(this).addClass('highlight').siblings().removeClass('highlight');
+                }
+            });
+        });
+    </script>
+{% endblock contenido %}
